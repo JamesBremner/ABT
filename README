@@ -1,0 +1,48 @@
+A simple console application, called ABT, which stores data in a B-Tree.
+
+There are 4 commands A, D, S, and Z.  Data, if required are entered on the next line.
+
+A 
+Index  Data
+
+This adds data to the B-Tree.  Example: 
+
+ A 
+1 test
+
+The data cannot contain spaces.
+
+This would add the data 'test' with an index of 1.  Overwrites existing data with same index
+
+Returns time taken
+
+D 
+Index
+
+This deletes data from B-Tree.  Example:  D 1
+
+This would delete any data with index 1
+
+Returns time taken.  Error message if index not present
+
+S 
+Index
+
+This searches for data with an index.  Example: S 1
+
+Return time taken and data found.
+
+Z
+
+This remove all data from the B-Tree.
+
+Notes:  Implemented in C++.  All code will be open source, protected with a BSD license, and available from a public GitHib repository.
+
+
+
+
+
+
+
+
+
