@@ -1,14 +1,10 @@
 A simple console application, called ABT, which stores data in a B-Tree.
 
-There are 4 commands A, D, S, and Z.  Data, if required are entered on the next line.
+There are 4 commands A, D, S, and Z.  
 
-A 
-Index  Data
+A Index  Data
 
-This adds data to the B-Tree.  Example: 
-
- A 
-1 test
+This adds data to the B-Tree.  Example: A 1 test
 
 The data cannot contain spaces.
 
@@ -16,8 +12,7 @@ This would add the data 'test' with an index of 1.  Overwrites existing data wit
 
 Returns time taken
 
-D 
-Index
+D Index
 
 This deletes data from B-Tree.  Example:  D 1
 
@@ -25,8 +20,7 @@ This would delete any data with index 1
 
 Returns time taken.  Error message if index not present
 
-S 
-Index
+S Index
 
 This searches for data with an index.  Example: S 1
 

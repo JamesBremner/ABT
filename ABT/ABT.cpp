@@ -90,7 +90,7 @@ cABTNode * cABTNode::Search( int index )
 		}
 		child++;
 	}
-	return this;
+	return child->Search( index );
 }
 
 void cABTNode::Insert( int index, const char * data )
