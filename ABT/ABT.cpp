@@ -9,18 +9,10 @@ A B-tree node
 class cABTNode
 {
 public:
-	/*
-	Each internal node of a B-tree will contain a number of keys.
-	The keys act as separation values which divide its subtrees.
-	For example, if an internal node has 3 child nodes (or subtrees)
-	then it must have 2 keys: a1 and a2.
-	All values in the leftmost subtree will be less than a1,
-	all values in the middle subtree will be between a1 and a2,
-	and all values in the rightmost subtree will be greater than a2.
-	*/
 	vector< int > myKey;
 
-	vector< cABTNode * > myChild;
+	//vector< cABTNode * > myChild;
+	set< cABTNode > myChild;
 	int myIndex;
 	string myData;
 
@@ -28,7 +20,14 @@ public:
 	/** A leaf node has no children */
 	bool IsLeaf()	{ return myChild.size() == 0; }
 	void Insert( int index, const char * data );
+	
+	/** nodes are stored in order of increasing index */
+	bool operator <( const cABTNode& other ) const
+	{ return myIndex < other.myIndex; }
+
 	void Dump();
+private:
+	void RefreshKeys();
 };
 
 /**
@@ -50,11 +49,10 @@ public:
 	void Dump();
 private:
 	cABTNode * myRoot;
-	vector < cABTNode* > myTree;
 };
 
 typedef vector < int >::iterator iter_key;
-typedef vector < cABTNode* >::iterator iter_node;
+typedef set < cABTNode >::iterator iter_node;
 
 /**
 
@@ -74,8 +72,10 @@ cABTNode * cABTNode::Search( int index )
 		return this;
 	if( ! myKey.size() ) {
 		// just one child
-		if( myChild[0]->myIndex == index )
-			return myChild[0];
+		if( myChild.begin()->myIndex == index ) {
+			//found index we were looking for
+			return &(*(myChild.begin()));
+		}
 		// index must be new
 		return this;
 	}
@@ -86,7 +86,7 @@ cABTNode * cABTNode::Search( int index )
 	{
 		if( index < *k ) {
 			// the index is in this range
-			return (*child)->Search( index );
+			return child->Search( index );
 		}
 		child++;
 	}
@@ -95,18 +95,44 @@ cABTNode * cABTNode::Search( int index )
 
 void cABTNode::Insert( int index, const char * data )
 {
-	cABTNode *new_node = new cABTNode();
-	new_node->myIndex = index;
-	new_node->myData  = data;
-	myChild.push_back( new_node );
+	cABTNode new_node;
+	new_node.myIndex = index;
+	new_node.myData  = data;
+	myChild.insert( new_node );
+	RefreshKeys();
 }
+/**
+  Recalculate the keys
 
+	Each internal node of a B-tree will contain a number of keys.
+	The keys act as separation values which divide its subtrees.
+	For example, if an internal node has 3 child nodes (or subtrees)
+	then it must have 2 keys: a1 and a2.
+	All values in the leftmost subtree will be less than a1,
+	all values in the middle subtree will be between a1 and a2,
+	and all values in the rightmost subtree will be greater than a2.
+	*/
+
+void cABTNode::RefreshKeys()
+{
+	myKey.clear();
+
+	iter_node n = myChild.begin();
+	int ub = n->myIndex + 1;
+	n++;
+	while( n !=  myChild.end() ) {
+		myKey.push_back( ub );
+		ub = n->myIndex + 1;
+		n++;
+	}
+
+
+}
 
 cABT::cABT()
 {
 	// create empty root node
 	myRoot = new cABTNode();
-	myTree.push_back( myRoot );
 }
 /**
 
@@ -155,11 +181,17 @@ void cABTNode::Dump()
 		printf("Leaf %d %s\n",
 			myIndex, myData.c_str());
 	else {
-		printf("Internal\n");
+		printf("Internal %d children\nKeys: ", myChild.size());
+		for( iter_key k = myKey.begin();
+			k != myKey.end(); k++ )
+		{
+			printf(" %d",*k);
+		}
+		printf("\n");
 		for( iter_node k = myChild.begin();
 			k != myChild.end(); k++ )
 		{
-			(*k)->Dump();
+			k->Dump();
 		}
 	}
 }
